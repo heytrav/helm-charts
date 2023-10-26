@@ -76,3 +76,8 @@ Create the name of the service account to use
 {{- fail "projectId must be defined" }}
 {{- end }}
 {{- end }}
+
+
+{{- define "k8s-keystone-auth.config.checksum" -}}
+checksum/config: {{  tpl .Values.rbacPolicies .| sha256sum }}
+{{- end }}
