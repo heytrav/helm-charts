@@ -1,25 +1,106 @@
 # K8S Keystone Auth
 
-Helm chart for deploying k8s-keystone-auth webhook to a Kubernetes cluster
+Deploy `k8s-keystone-auth` on a Kubernetes cluster to allow RBAC with Openstack.
+
+## Prerequisites
+
+The following must be set up in the **control plane** of a kubernetes cluster:
+
+* `kube-apiserver` must be configured to allow **Webhook** authorization and have the appropriate webhook config in place
+
+   ```yaml
+   command:
+         - kube-apiserver
+         .
+         .
+         - --authorization-mode=Node,Webhook,RBAC                                                                                                                                                         │
+         - --authentication-token-webhook-config-file=/etc/kubernetes/webhooks/keystone_webhook_config.yaml                                                                                               │
+         - --authorization-webhook-config-file=/etc/kubernetes/webhooks/keystone_webhook_config.yaml    
+         .
+   ```
+* Webhook config (i.e. `keystone_webhook_config.yaml`) deployed on the control plane
+
+   ```yaml
+   ---
+   apiVersion: v1
+   kind: Config
+   preferences: {}
+   clusters:
+     - cluster:
+         insecure-skip-tls-verify: true
+         server: https://127.0.0.1:8443/webhook
+       name: webhook
+   users:
+     - name: webhook
+   contexts:
+     - context:
+         cluster: webhook
+         user: webhook
+       name: webhook
+   current-context: webhook
+   ```
 
 
-## Usage
+With the webhook configuration in place and `kube-apiserver` configured as above, 
+the apiserver will direct RBAC authentication/authorization requests to an https
+endpoint as specified by `clusters[0].cluster.server`.
 
-[Helm](https://helm.sh) must be installed to use the charts.  Please refer to
-Helm's [documentation](https://helm.sh/docs) to get started.
+## Installing RBAC
 
-Once Helm has been set up correctly, add the repo as follows:
+To install k8s keystone auth run the following:
 
-  helm repo add heytrav https://heytrav.github.io/helm-charts
+```
+helm  upgrade k8s-keystone-auth --install $THISHELMCHART --version $HELMCHARTVERSION --set openstackAuthUrl=$OS_AUTH_URL --set projectId=$OS_PROJECT_ID
+```
 
-If you had already added this repo earlier, run `helm repo update` to retrieve
-the latest versions of the packages.  You can then run `helm search repo
-<alias>` to see the charts.
+## Authenticating
 
-To install the k8s-keystone-auth chart:
+To interact with a cluster using RBAC you'll need the following:
 
-    helm install my-k8s-keystone-auth heytrav/k8s-keystone-auth
+* A valid commandline session (i.e using your OpenStack rc file)
+* Kubeconfig file set up for RBAC
 
-To uninstall the chart:
+In your `kubeconfig` file:
 
-    helm delete my-k8s-keystone-auth
+```yaml
+
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: *************
+    server: https://###.###.###.###:6443
+  name: myclustername
+contexts:
+- context:
+    cluster: myclustername
+    user: myclustername-admin
+  name: myusername@myclustername
+current-context: myusername@myclustername
+kind: Config
+preferences: {}
+users:
+- name: myusername
+  user:
+    exec:
+      command: /bin/bash
+      apiVersion: client.authentication.k8s.io/v1beta1
+      args:
+        - -c
+        - >
+          if [ -z ${OS_TOKEN} ]; then
+              echo 'Error: Missing OpenStack credential from environment variable $OS_TOKEN' > /dev/stderr
+              exit 1
+          else
+              echo '{ "apiVersion": "client.authentication.k8s.io/v1beta1", "kind": "ExecCredential", "status": { "token": "'"${OS_TOKEN}"'"}}'
+          fi
+
+
+
+
+```
+
+**Note:** For clusters created using Magnum, the `openstack` magnum client should generate the appropriate `kubeconfig` file for you with the command:
+
+```
+openstack coe cluster config $CLUSTERNAME --use-keystone
+```
