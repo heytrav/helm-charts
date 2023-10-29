@@ -5,7 +5,7 @@ metadata:
   name: {{ .Values.policyConfigMapName }}
   namespace: kube-system
   annotations:
-    {{- include "k8s-keystone-auth.config.checksum" . | nindent 4 }}
+    {{- include "k8s-keystone-auth.rbacPolicies.checksum" . | nindent 4 }}
   labels:
     {{- include "k8s-keystone-auth.labels" . | nindent 4 }}
 data:
