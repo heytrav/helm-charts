@@ -13,6 +13,9 @@ stages:
     - export CHART_VERSION=$(git describe --tags)
   rules:
     - if: $CI_COMMIT_TAG && $CI_COMMIT_REF_NAME =~ /^\d+\.\d+\.\d+.*$/
+      changes:
+        - charts/$BUILD_DIR/*
+
 
 .package_chart:
   extends: .helm_publish_jobs
@@ -40,17 +43,11 @@ stages:
 
 package_k8s_keystone_auth:
   extends: .package_chart
-  only:
-    changes:
-      - charts/k8s-keystone-auth
   variables:
     BUILD_DIR: k8s-keystone-auth
 
 publish_k8s_keystone_auth_chart:
   extends: .publish_chart
-  only:
-    changes:
-      - charts/k8s-keystone-auth
   variables:
     BUILD_DIR: k8s-keystone-auth
   dependencies:
