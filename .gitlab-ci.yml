@@ -36,7 +36,7 @@ stages:
     - >
       helm push
       ${CI_PROJECT_DIR}/${BUILD_DIR}-${CHART_VERSION}.tgz
-      oci://internal.oci-registry.nz-por-1.catalystcloud.nz/capi-plugin-helm-charts/${BUILD_DIR}
+      oci://internal.oci-registry.nz-por-1.catalystcloud.nz/capi-plugin-helm-charts
 
 package_k8s_keystone_auth:
   extends: .package_chart
