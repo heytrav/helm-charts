@@ -63,7 +63,6 @@ To interact with a cluster using RBAC you'll need the following:
 In your `kubeconfig` file:
 
 ```yaml
-
 apiVersion: v1
 clusters:
 - cluster:
