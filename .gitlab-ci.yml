@@ -22,7 +22,7 @@ stages:
     - helm package --version ${CHART_VERSION} ${CI_PROJECT_DIR}/charts/${BUILD_DIR}
   artifacts:
     paths:
-      - "${CI_PROJECT_DIR}/charts/${BUILD_DIR}-*.tgz"
+      - "${CI_PROJECT_DIR}/${BUILD_DIR}-*.tgz"
 
 .publish_chart:
   extends: .helm_publish_jobs
@@ -30,12 +30,12 @@ stages:
   script:
     - >
       curl --request POST
-      --form chart=@${CI_PROJECT_DIR}/charts/${BUILD_DIR}-${CHART_VERSION}.tgz
+      --form chart=@${CI_PROJECT_DIR}/${BUILD_DIR}-${CHART_VERSION}.tgz
       --user gitlab-ci-token:${CI_JOB_TOKEN}
       ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/api/stable/charts
     - >
       helm push
-      ${CI_PROJECT_DIR}/charts/${BUILD_DIR}-${CHART_VERSION}.tgz
+      ${CI_PROJECT_DIR}/${BUILD_DIR}-${CHART_VERSION}.tgz
       oci://internal.oci-registry.nz-por-1.catalystcloud.nz/capi-plugin-helm-charts/${BUILD_DIR}
 
 package_k8s_keystone_auth:
