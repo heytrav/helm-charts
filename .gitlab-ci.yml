@@ -51,4 +51,3 @@ publish_k8s_keystone_auth_chart:
     BUILD_DIR: k8s-keystone-auth
   dependencies:
     - package_k8s_keystone_auth
-
