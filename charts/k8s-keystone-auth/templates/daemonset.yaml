@@ -47,8 +47,6 @@ spec:
             - {{ include "k8s-keystone-auth.authUrl" . }}
             - --sync-configmap-name
             - {{ .Values.syncConfigMapName }}
-            - --keystone-ca-file
-            - /etc/ssl/cert.pem
             - --listen
             - {{ .Values.keystoneAuthListenAddress }}
           volumeMounts:
