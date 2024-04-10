@@ -3,6 +3,16 @@ entries:
   k8s-keystone-auth:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2024-04-10T19:23:16.124982852Z"
+    description: Set up webhook for Keystone-based RBAC
+    digest: d0271681c315634cbe2164b26edc3122c759f14e6494d6086889aae1a7c7a60b
+    name: k8s-keystone-auth
+    type: application
+    urls:
+    - https://github.com/heytrav/helm-charts/releases/download/k8s-keystone-auth-0.0.11/k8s-keystone-auth-0.0.11.tgz
+    version: 0.0.11
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2024-04-10T06:43:36.277318062Z"
     description: Set up webhook for Keystone-based RBAC
     digest: dc61a6ca8c9cd845d95ac8237ca1ec652d74ae1c971bd74d28767513a82c2b5f
@@ -71,4 +81,4 @@ entries:
     urls:
     - https://github.com/heytrav/helm-charts/releases/download/k8s-keystone-auth-0.0.3/k8s-keystone-auth-0.0.3.tgz
     version: 0.0.3
-generated: "2024-04-10T06:43:36.277356664Z"
+generated: "2024-04-10T19:23:16.125065507Z"
